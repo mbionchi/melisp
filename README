@@ -1,4 +1,9 @@
 melisp:
 =======
 
-  my take on the Build Your Own Lisp book, http://buildyourownlisp.com
+  a lisp project loosely based on the Build Your Own Lisp book,
+http://buildyourownlisp.com/
+
+  the key difference is that this project doesn't use the libraries
+the author provides, thus covering a greater range of topics and
+building the language from scratch
