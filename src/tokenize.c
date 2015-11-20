@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include "tokenize.h"
+#include "list.h"
 
 #define BUFSIZE 255
 
@@ -21,26 +22,24 @@ token_t **tokenize(char *s) {
     *lexeme = '\0';
     while (*s_iter) {
         if (*s_iter == '(') {
-            token_t *t = malloc(sizeof(token_t));
-            t->lexeme = malloc(sizeof(char)*2);
-            t->lexeme[0] = '(';
-            t->lexeme[1] = '\0';
-            t->type = LPAREN;
-            iter->val = t;
-            iter->next = malloc(sizeof(node_t));
-            iter = iter->next;
-            iter->next = NULL;
-            n_tokens++;
+            if (!i) {
+                token_t *t = malloc(sizeof(token_t));
+                t->lexeme = malloc(sizeof(char)*2);
+                t->lexeme[0] = '(';
+                t->lexeme[1] = '\0';
+                t->type = LPAREN;
+                iter = append(iter, t);
+                n_tokens++;
+            } else {
+                fprintf(stderr, "lexer err: unexpected character\n");
+            }
         } else if (*s_iter == ')') {
             if (i) {
                 token_t *t = malloc(sizeof(token_t));
                 lexeme[i] = '\0';
                 t->lexeme = lexeme;
                 t->type = ATOM;
-                iter->val = t;
-                iter->next = malloc(sizeof(node_t));
-                iter = iter->next;
-                iter->next = NULL;
+                iter = append(iter, t);
                 n_tokens++;
                 lexeme = malloc(sizeof(char)*BUFSIZE);
                 i = 0;
@@ -50,10 +49,7 @@ token_t **tokenize(char *s) {
             t->lexeme[0] = ')';
             t->lexeme[1] = '\0';
             t->type = RPAREN;
-            iter->val = t;
-            iter->next = malloc(sizeof(node_t));
-            iter = iter->next;
-            iter->next = NULL;
+            iter = append(iter, t);
             n_tokens++;
         } else if (isspace(*s_iter)) {
             if (i) {
@@ -61,21 +57,20 @@ token_t **tokenize(char *s) {
                 lexeme[i] = '\0';
                 t->lexeme = lexeme;
                 t->type = ATOM;
-                iter->val = t;
-                iter->next = malloc(sizeof(node_t));
-                iter = iter->next;
-                iter->next = NULL;
+                iter = append(iter, t);
                 n_tokens++;
                 lexeme = malloc(sizeof(char)*BUFSIZE);
                 i = 0;
             }
-        } else {
+        } else if (isgraph(*s_iter) && *s_iter != ')' && *s_iter != '(') {
             lexeme[i] = *s_iter;
             i++;
             if (i > BUFSIZE-1) {
                 fprintf(stderr, "oh no! token too long\n");
                 exit(1);
             }
+        } else {
+            fprintf(stderr, "lexer err: unexpected character\n");
         }
         s_iter++;
     }
@@ -88,6 +83,7 @@ token_t **tokenize(char *s) {
         i++;
     }
     tokens[n_tokens] = NULL;    /* we shall terminate the array with NULL */
+    freelist(first, freedummy);
     return tokens;
 }
 

@@ -10,12 +10,6 @@ struct token {
 };
 typedef struct token token_t;
 
-struct node {
-    void *val;
-    struct node *next;
-};
-typedef struct node node_t;
-
 extern const char* LEXTYPE[];
 
 token_t **tokenize(char*);
