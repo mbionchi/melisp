@@ -1,5 +1,5 @@
 CC=gcc
-COPTS=-Wall
+COPTS=-Wall -g
 
 SRCFILES=src/prompt.c src/tokenize.c src/tokenize.h src/list.c src/list.h
 

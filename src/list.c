@@ -3,12 +3,15 @@
 
 #include "list.h"
 
-node_t *append(node_t *node, void *val) {
-    node->val = val;
-    node->next = malloc(sizeof(node_t));
-    node->next->val = NULL;
-    node->next->next = NULL;
-    return node->next;
+node_t *append(node_t **node, void *val) {
+    node_t *this = *node,
+           *next = malloc(sizeof(node_t*));
+    next->val = NULL;
+    next->next = NULL;
+    this->val = val;
+    this->next = next;
+    node = &next;
+    return this;
 }
 
 void freelist(node_t *front, void(*f)(void*)) {

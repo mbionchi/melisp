@@ -1,18 +1,18 @@
 #ifndef ML_TOKENIZE_H
 #define ML_TOKENIZE_H
 
-enum token_type {LPAREN, RPAREN, ATOM};
+#include "list.h"
+
+enum token_type {LPAREN, RPAREN, SYMBOL, NUMBER, T, F};
 typedef enum token_type token_type_t;
 
 struct token {
-    char *lexeme;
+    void *value;
     token_type_t type;
 };
 typedef struct token token_t;
 
-extern const char* LEXTYPE[];
-
-token_t **tokenize(char*);
-void free_tokens(token_t**);
+node_t *tokenize(char*);
+void free_token(void*);
 
 #endif

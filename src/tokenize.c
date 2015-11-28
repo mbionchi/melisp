@@ -4,66 +4,83 @@
 #include <string.h>
 
 #include "tokenize.h"
+#include "parse.h"
 #include "list.h"
 
 #define BUFSIZE 255
 
-const char* LEXTYPE[] = {"LPAREN","RPAREN","ATOM"};
 
-token_t **tokenize(char *s) {
-    token_t **tokens;
-    node_t *first, *iter;
+int is_number(char *str) {
+    while (*str) {
+        if (!isdigit(*str)) {
+            return 0;
+        }
+        str++;
+    }
+    return 1;
+}
+
+token_t *parse_atom(char *str) {
+    token_t *token = malloc(sizeof(token_t));
+    if (is_number(str)) {
+        token->type = NUMBER;
+        int *numpt = malloc(sizeof(int));
+        *numpt = atoi(str);
+        token->value = numpt;
+    } else if (!strcmp(str, "#t")) {
+        token->value = NULL;
+        token->type = T;
+    } else if (!strcmp(str, "#f")) {
+        token->value = NULL;
+        token->type = F;
+    } else {
+        token->value = realloc(str, strlen(str));
+        token->type = SYMBOL;
+    }
+    return token;
+}
+
+node_t *tokenize(char *s_iter) {
+    node_t *first, *iter, *prev;
     first = malloc(sizeof(node_t));
+    prev = NULL;
     iter = first;
-    unsigned int n_tokens = 0;
-    char *s_iter = s;
-    char *lexeme = malloc(sizeof(char)*BUFSIZE);
+    char *str = malloc(sizeof(char)*BUFSIZE);
+    *str = '\0';
     int i=0;
-    *lexeme = '\0';
     while (*s_iter) {
         if (*s_iter == '(') {
-            if (!i) {
-                token_t *t = malloc(sizeof(token_t));
-                t->lexeme = malloc(sizeof(char)*2);
-                t->lexeme[0] = '(';
-                t->lexeme[1] = '\0';
-                t->type = LPAREN;
-                iter = append(iter, t);
-                n_tokens++;
-            } else {
-                fprintf(stderr, "lexer err: unexpected character\n");
-            }
-        } else if (*s_iter == ')') {
             if (i) {
-                token_t *t = malloc(sizeof(token_t));
-                lexeme[i] = '\0';
-                t->lexeme = lexeme;
-                t->type = ATOM;
-                iter = append(iter, t);
-                n_tokens++;
-                lexeme = malloc(sizeof(char)*BUFSIZE);
+                str[i] = '\0';
+                prev = append(&iter, parse_atom(str));
+                str = malloc(sizeof(char)*BUFSIZE);
                 i = 0;
             }
             token_t *t = malloc(sizeof(token_t));
-            t->lexeme = malloc(sizeof(char)*2);
-            t->lexeme[0] = ')';
-            t->lexeme[1] = '\0';
-            t->type = RPAREN;
-            iter = append(iter, t);
-            n_tokens++;
-        } else if (isspace(*s_iter)) {
+            t->value = NULL;
+            t->type = LPAREN;
+            prev = append(&iter, t);
+        } else if (*s_iter == ')') {
             if (i) {
-                token_t *t = malloc(sizeof(token_t));
-                lexeme[i] = '\0';
-                t->lexeme = lexeme;
-                t->type = ATOM;
-                iter = append(iter, t);
-                n_tokens++;
-                lexeme = malloc(sizeof(char)*BUFSIZE);
+                str[i] = '\0';
+                prev = append(&iter, parse_atom(str));
+                str = malloc(sizeof(char)*BUFSIZE);
                 i = 0;
             }
-        } else if (isgraph(*s_iter) && *s_iter != ')' && *s_iter != '(') {
-            lexeme[i] = *s_iter;
+            token_t *t = malloc(sizeof(token_t));
+            t->value = NULL;
+            t->type = RPAREN;
+            prev = append(&iter, t);
+        } else if (isspace(*s_iter)) {
+            if (i) {
+                str[i] = '\0';
+                prev = append(&iter, parse_atom(str));
+                str = malloc(sizeof(char)*BUFSIZE);
+                i = 0;
+            }
+        } else if (isgraph(*s_iter) && !ispunct(*s_iter) &&
+                     *s_iter != ')' && *s_iter != '(') {
+            str[i] = *s_iter;
             i++;
             if (i > BUFSIZE-1) {
                 fprintf(stderr, "oh no! token too long\n");
@@ -71,29 +88,16 @@ token_t **tokenize(char *s) {
             }
         } else {
             fprintf(stderr, "lexer err: unexpected character\n");
+            exit(1);
         }
         s_iter++;
     }
-    tokens = malloc(sizeof(token_t*)*n_tokens+1);
-    iter = first;
-    i = 0;
-    while (iter) {
-        tokens[i] = iter->val;
-        iter = iter->next;
-        i++;
-    }
-    tokens[n_tokens] = NULL;    /* we shall terminate the array with NULL */
-    freelist(first, freedummy);
-    return tokens;
+    prev->next = NULL;
+    free(iter);
+    return first;
 }
 
-void free_tokens(token_t **t) {
-    token_t **iter = t, **tmp;
-    while (*iter) {
-        tmp = iter;
-        free((*tmp)->lexeme);
-        free(*tmp);
-        iter++;
-    }
+void free_token(void *t) {
+    free(((token_t*)t)->value);
     free(t);
 }
