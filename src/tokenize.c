@@ -78,8 +78,7 @@ node_t *tokenize(char *s_iter) {
                 str = malloc(sizeof(char)*BUFSIZE);
                 i = 0;
             }
-        } else if (isgraph(*s_iter) && !ispunct(*s_iter) &&
-                     *s_iter != ')' && *s_iter != '(') {
+        } else if (isgraph(*s_iter) && *s_iter != ')' && *s_iter != '(') {
             str[i] = *s_iter;
             i++;
             if (i > BUFSIZE-1) {
