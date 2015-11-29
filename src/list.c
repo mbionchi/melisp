@@ -5,12 +5,12 @@
 
 node_t *append(node_t **node, void *val) {
     node_t *this = *node,
-           *next = malloc(sizeof(node_t*));
+           *next = malloc(sizeof(node_t));
     next->val = NULL;
     next->next = NULL;
     this->val = val;
     this->next = next;
-    node = &next;
+    *node = next;
     return this;
 }
 

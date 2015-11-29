@@ -52,44 +52,29 @@ node_t *tokenize(char *s_iter) {
         if (*s_iter == '(') {
             if (i) {
                 str[i] = '\0';
-                iter->val = parse_atom(str);
-                prev = iter;
-                iter->next = malloc(sizeof(node_t));
-                iter = iter->next;
+                prev = append(&iter, parse_atom(str));
                 str = malloc(sizeof(char)*BUFSIZE);
                 i = 0;
             }
             token_t *t = malloc(sizeof(token_t));
             t->value = NULL;
             t->type = LPAREN;
-            iter->val = t;
-            prev = iter;
-            iter->next = malloc(sizeof(node_t));
-            iter = iter->next;
+            prev = append(&iter, t);
         } else if (*s_iter == ')') {
             if (i) {
                 str[i] = '\0';
-                iter->val = parse_atom(str);
-                prev = iter;
-                iter->next = malloc(sizeof(node_t));
-                iter = iter->next;
+                prev = append(&iter, parse_atom(str));
                 str = malloc(sizeof(char)*BUFSIZE);
                 i = 0;
             }
             token_t *t = malloc(sizeof(token_t));
             t->value = NULL;
             t->type = RPAREN;
-            iter->val = t;
-            prev = iter;
-            iter->next = malloc(sizeof(node_t));
-            iter = iter->next;
+            prev = append(&iter, t);
         } else if (isspace(*s_iter)) {
             if (i) {
                 str[i] = '\0';
-                iter->val = parse_atom(str);
-                prev = iter;
-                iter->next = malloc(sizeof(node_t));
-                iter = iter->next;
+                prev = append(&iter, parse_atom(str));
                 str = malloc(sizeof(char)*BUFSIZE);
                 i = 0;
             }
