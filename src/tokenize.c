@@ -9,7 +9,6 @@
 
 #define BUFSIZE 255
 
-
 int is_number(char *str) {
     while (*str) {
         if (!isdigit(*str)) {
