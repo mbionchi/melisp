@@ -60,10 +60,10 @@ void print_ast_types(tree_node_t *tree, int indent) {
                 fprintf(stderr,"%sLIST\n", getindent(indent));
                 break;
             case P_SYMBOL:
-                fprintf(stderr,"%sSYMBOL\n", getindent(indent));
+                fprintf(stderr,"%sSYMBOL: %s\n", getindent(indent), (char*)tree->val);
                 break;
             case P_NUMBER:
-                fprintf(stderr,"%sNUMBER\n", getindent(indent));
+                fprintf(stderr,"%sNUMBER: %d\n", getindent(indent), *(int*)tree->val);
                 break;
             case P_T:
                 fprintf(stderr,"%sTRUE\n", getindent(indent));
