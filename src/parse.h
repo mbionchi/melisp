@@ -14,5 +14,6 @@ struct tree_node {
 typedef struct tree_node tree_node_t;
 
 tree_node_t *parse(node_t*);
+void freetree(void*, void(*)(void*));
 
 #endif

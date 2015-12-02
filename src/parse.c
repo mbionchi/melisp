@@ -1,6 +1,7 @@
 #include <stdlib.h>
 
 #include "tokenize.h"
+#include "list.h"
 #include "parse.h"
 
 tree_node_t *parse_program(node_t*);
@@ -25,6 +26,29 @@ tree_node_t *parse_program(node_t *curr) {
     prev->next=NULL;
     free(iter);
     return program;
+}
+
+void freetree(void *tree, void(*f)(void*)) {
+    if (!tree) {
+        return;
+    } else {
+        /* why this no work ;_; */
+        /*
+        freelist2(((tree_node_t*)tree)->children, freetree, f);
+        f(((tree_node_t*)tree)->val);
+        free(((tree_node_t*)tree)->val);
+        */
+        node_t *iter = ((tree_node_t*)tree)->children;
+        node_t *prev;
+        while (iter) {
+            prev = iter;
+            iter = iter->next;
+            freetree(prev->val, f);
+            free(prev);
+        }
+        f(((tree_node_t*)tree)->val);
+        free(tree);
+    }
 }
 
 tree_node_t *parse_sexpr(node_t **curr) {

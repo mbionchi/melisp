@@ -86,8 +86,7 @@ void print_ast_types(tree_node_t *tree, int indent) {
 int main(int argc, char **argv) {
     ssize_t nr;
     size_t n = 0;
-    char *buf;
-    buf = NULL;
+    char *buf = NULL;
     printf("melisp > ");
     nr = getline(&buf, &n, stdin);
     while (nr > 0) {
@@ -95,6 +94,8 @@ int main(int argc, char **argv) {
         print_tokens(tokens);
         tree_node_t *ast = parse(tokens);
         print_ast_types(ast, 0);
+        freetree(ast, freedummy); /* deletion of vals is handled by freelist call,
+                                     since in the ast vals are a shallow copies */
         freelist(tokens, free_token);
         free(buf);
         buf = NULL;

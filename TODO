@@ -1,0 +1,5 @@
+* ERROR HANDLING
+  - in lexer
+  - in parser
+
+* CHECK FOR MEMORY LEAKS
