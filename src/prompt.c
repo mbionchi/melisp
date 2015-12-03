@@ -77,7 +77,7 @@ void print_ast_types(tree_node_t *tree, int indent) {
         }
         node_t *iter = tree->children;
         while (iter) {
-            print_ast_types((tree_node_t*)iter->val, indent+4);
+            print_ast_types((tree_node_t*)iter->val, indent+2);
             iter = iter->next;
         }
     }
