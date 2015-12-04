@@ -4,6 +4,7 @@
 #include "tokenize.h"
 #include "list.h"
 #include "parse.h"
+#include "eval.h"
 
 char *getindent(int n) {
     char *str = malloc(sizeof(char)*n+1);
@@ -42,6 +43,51 @@ void print_tokens(node_t *iter) {
                 break;
         }
         iter = iter->next;
+    }
+}
+
+void print_ast(tree_node_t *tree) {
+    if (tree) {
+        node_t *iter;
+        switch (tree->type) {
+            case P_PROGRAM:
+                iter = tree->children;
+                while (iter) {
+                    print_ast((tree_node_t*)iter->val);
+                    printf("\n");
+                    iter = iter->next;
+                }
+                break;
+            case P_SYMBOL:
+                printf("%s", (char*)tree->val);
+                break;
+            case P_NUMBER:
+                printf("%d", *(int*)tree->val);
+                break;
+            case P_LIST:
+                printf("(");
+                iter = tree->children;
+                if (iter) {
+                    print_ast((tree_node_t*)iter->val);
+                    iter = iter->next;
+                }
+                while (iter) {
+                    printf(" ");
+                    print_ast((tree_node_t*)iter->val);
+                    iter = iter->next;
+                }
+                printf(")");
+                break;
+            case P_T:
+                printf("#t");
+                break;
+            case P_F:
+                printf("#f");
+                break;
+            default:
+                printf("WTF???");
+                break;
+        }
     }
 }
 
@@ -94,6 +140,9 @@ int main(int argc, char **argv) {
         print_tokens(tokens);
         tree_node_t *ast = parse(tokens);
         print_ast_types(ast, 0);
+        eval_ast(&ast, NULL);
+        print_ast_types(ast, 0);
+        print_ast(ast);
         freetree(ast, freedummy); /* deletion of vals is handled by freelist call,
                                      since in the ast vals are a shallow copies */
         freelist(tokens, free_token);
