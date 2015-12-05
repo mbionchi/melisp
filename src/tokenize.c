@@ -19,22 +19,18 @@ int is_number(char *str) {
     return 1;
 }
 
-token_t *parse_atom(char *str) {
+token_t *parse_token(char *str) {
     token_t *token = malloc(sizeof(token_t));
     if (is_number(str)) {
-        token->type = NUMBER;
-        int *numpt = malloc(sizeof(int));
-        *numpt = atoi(str);
-        token->value = numpt;
+        token->type = T_NUMBER;
+        token->val.num = atoi(str);
     } else if (!strcmp(str, "#t")) {
-        token->value = NULL;
-        token->type = T;
+        token->type = T_T;
     } else if (!strcmp(str, "#f")) {
-        token->value = NULL;
-        token->type = F;
+        token->type = T_F;
     } else {
-        token->value = realloc(str, strlen(str));
-        token->type = SYMBOL;
+        token->val.sym = realloc(str, strlen(str));
+        token->type = T_SYMBOL;
     }
     return token;
 }
@@ -47,45 +43,57 @@ node_t *tokenize(char *s_iter) {
     char *str = malloc(sizeof(char)*BUFSIZE);
     *str = '\0';
     int i=0;
+    int quote=0;
     while (*s_iter) {
         if (*s_iter == '(') {
-            if (i) {
-                str[i] = '\0';
-                prev = append(&iter, parse_atom(str));
-                str = malloc(sizeof(char)*BUFSIZE);
-                i = 0;
+            if (!i) {
+                token_t *t = malloc(sizeof(token_t));
+                t->type = T_LPAREN;
+                prev = append(&iter, t);
+                quote=0;
+            } else {
+                printf("expected whitespace between token and LPAREN\n");
+                exit(1);
             }
-            token_t *t = malloc(sizeof(token_t));
-            t->value = NULL;
-            t->type = LPAREN;
-            prev = append(&iter, t);
         } else if (*s_iter == ')') {
             if (i) {
                 str[i] = '\0';
-                prev = append(&iter, parse_atom(str));
+                prev = append(&iter, parse_token(str));
                 str = malloc(sizeof(char)*BUFSIZE);
                 i = 0;
             }
             token_t *t = malloc(sizeof(token_t));
-            t->value = NULL;
-            t->type = RPAREN;
+            t->type = T_RPAREN;
             prev = append(&iter, t);
-        } else if (isspace(*s_iter)) {
+            quote=0;
+        } else if (isspace(*s_iter) && !quote) {
             if (i) {
                 str[i] = '\0';
-                prev = append(&iter, parse_atom(str));
+                prev = append(&iter, parse_token(str));
                 str = malloc(sizeof(char)*BUFSIZE);
                 i = 0;
             }
-        } else if (isgraph(*s_iter) && *s_iter != ')' && *s_iter != '(') {
+        } else if (*s_iter == '\'') {
+            if (!i) {
+                token_t *t = malloc(sizeof(token_t));
+                t->type = T_QUOTE;
+                prev = append(&iter, t);
+                quote=1;
+            } else {
+                printf("expected whitespace between token and QUOTE\n");
+                exit(1);
+            }
+        } else if (isgraph(*s_iter) &&
+                *s_iter != ')' && *s_iter != '(' && *s_iter != '\'') {
             str[i] = *s_iter;
             i++;
             if (i > BUFSIZE-1) {
-                fprintf(stderr, "oh no! token too long\n");
+                printf("token too long\n");
                 exit(1);
             }
+            quote=0;
         } else {
-            fprintf(stderr, "lexer err: unexpected character\n");
+            printf("unexpected character: %c\n", *s_iter);
             exit(1);
         }
         s_iter++;
@@ -95,7 +103,8 @@ node_t *tokenize(char *s_iter) {
     return first;
 }
 
+/*
 void free_token(void *t) {
-    free(((token_t*)t)->value);
+    free(((token_t*)t)->val);
     free(t);
-}
+}*/

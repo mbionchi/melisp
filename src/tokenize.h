@@ -3,11 +3,14 @@
 
 #include "list.h"
 
-enum token_type {LPAREN, RPAREN, SYMBOL, NUMBER, T, F};
+enum token_type {T_LPAREN, T_RPAREN, T_SYMBOL, T_NUMBER, T_T, T_F, T_QUOTE};
 typedef enum token_type token_type_t;
 
 struct token {
-    void *value;
+    union {
+        long int num;
+        char *sym;
+    } val;
     token_type_t type;
 };
 typedef struct token token_t;

@@ -20,23 +20,26 @@ void print_tokens(node_t *iter) {
     while (iter) {
         token_t *token = iter->val;
         switch (token->type) {
-            case LPAREN:
+            case T_LPAREN:
                 printf("LEXER: LPAREN\n");
                 break;
-            case RPAREN:
+            case T_RPAREN:
                 printf("LEXER: RPAREN\n");
                 break;
-            case SYMBOL:
-                printf("LEXER: SYMBOL %s\n", (char*)token->value);
+            case T_SYMBOL:
+                printf("LEXER: SYMBOL %s\n", token->val.sym);
                 break;
-            case NUMBER:
-                printf("LEXER: NUMBER %d\n", *((int*)token->value));
+            case T_NUMBER:
+                printf("LEXER: NUMBER %ld\n", token->val.num);
                 break;
-            case T:
+            case T_T:
                 printf("LEXER: TRUE\n");
                 break;
-            case F:
+            case T_F:
                 printf("LEXER: FALSE\n");
+                break;
+            case T_QUOTE:
+                printf("LEXER: QUOTE\n");
                 break;
             default:
                 printf("WTF???\n");
@@ -138,14 +141,14 @@ int main(int argc, char **argv) {
     while (nr > 0) {
         node_t *tokens = tokenize(buf);
         print_tokens(tokens);
-        tree_node_t *ast = parse(tokens);
-        print_ast_types(ast, 0);
-        eval_ast(&ast, NULL);
-        print_ast_types(ast, 0);
-        print_ast(ast);
-        freetree(ast, freedummy); /* deletion of vals is handled by freelist call,
-                                     since in the ast vals are a shallow copies */
-        freelist(tokens, free_token);
+//        tree_node_t *ast = parse(tokens);
+//        print_ast_types(ast, 0);
+//        eval_ast(&ast, NULL);
+//        print_ast_types(ast, 0);
+//        print_ast(ast);
+//        freetree(ast, freedummy); /* deletion of vals is handled by freelist call,
+//                                     since in the ast vals are a shallow copies */
+//        freelist(tokens, free_token);
         free(buf);
         buf = NULL;
         printf("melisp > ");
