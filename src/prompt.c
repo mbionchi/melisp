@@ -49,11 +49,12 @@ void print_tokens(node_t *iter) {
     }
 }
 
+/*
 void print_ast(tree_node_t *tree) {
     if (tree) {
         node_t *iter;
         switch (tree->type) {
-            case P_PROGRAM:
+            case PROGRAM:
                 iter = tree->children;
                 while (iter) {
                     print_ast((tree_node_t*)iter->val);
@@ -61,13 +62,13 @@ void print_ast(tree_node_t *tree) {
                     iter = iter->next;
                 }
                 break;
-            case P_SYMBOL:
+            case SYMBOL:
                 printf("%s", (char*)tree->val);
                 break;
-            case P_NUMBER:
+            case NUMBER:
                 printf("%d", *(int*)tree->val);
                 break;
-            case P_LIST:
+            case LIST:
                 printf("(");
                 iter = tree->children;
                 if (iter) {
@@ -81,10 +82,10 @@ void print_ast(tree_node_t *tree) {
                 }
                 printf(")");
                 break;
-            case P_T:
+            case T:
                 printf("#t");
                 break;
-            case P_F:
+            case F:
                 printf("#f");
                 break;
             default:
@@ -92,32 +93,35 @@ void print_ast(tree_node_t *tree) {
                 break;
         }
     }
-}
+}*/
 
 void print_ast_types(tree_node_t *tree, int indent) {
     if (!tree) {
         return;
     } else {
         switch (tree->type) {
-            case P_PROGRAM:
+            case PROGRAM:
                 fprintf(stderr,"%sPROGRAM\n", getindent(indent));
                 break;
-            case P_SEXPR:
+            case QEXPR:
+                fprintf(stderr,"%sQEXPR\n", getindent(indent));
+                break;
+            case SEXPR:
                 fprintf(stderr,"%sSEXPR\n", getindent(indent));
                 break;
-            case P_LIST:
+            case LIST:
                 fprintf(stderr,"%sLIST\n", getindent(indent));
                 break;
-            case P_SYMBOL:
-                fprintf(stderr,"%sSYMBOL: %s\n", getindent(indent), (char*)tree->val);
+            case SYMBOL:
+                fprintf(stderr,"%sSYMBOL: %s\n", getindent(indent), tree->val.sym);
                 break;
-            case P_NUMBER:
-                fprintf(stderr,"%sNUMBER: %d\n", getindent(indent), *(int*)tree->val);
+            case NUMBER:
+                fprintf(stderr,"%sNUMBER: %ld\n", getindent(indent), tree->val.num);
                 break;
-            case P_T:
+            case T:
                 fprintf(stderr,"%sTRUE\n", getindent(indent));
                 break;
-            case P_F:
+            case F:
                 fprintf(stderr,"%sFALSE\n", getindent(indent));
                 break;
             default:
@@ -141,8 +145,8 @@ int main(int argc, char **argv) {
     while (nr > 0) {
         node_t *tokens = tokenize(buf);
         print_tokens(tokens);
-//        tree_node_t *ast = parse(tokens);
-//        print_ast_types(ast, 0);
+        tree_node_t *ast = parse(tokens);
+        print_ast_types(ast, 0);
 //        eval_ast(&ast, NULL);
 //        print_ast_types(ast, 0);
 //        print_ast(ast);

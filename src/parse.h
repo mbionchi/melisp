@@ -3,12 +3,15 @@
 
 #include "list.h"
 
-enum ml_val_type {P_PROGRAM, P_SEXPR, P_LIST, P_SYMBOL, P_NUMBER, P_T, P_F};
+enum ml_val_type {PROGRAM, SEXPR, QEXPR, LIST, SYMBOL, NUMBER, T, F};
 typedef enum ml_val_type ml_val_type_t;
 
 struct tree_node {
     ml_val_type_t type;
-    void *val;
+    union {
+        long int num;
+        char *sym;
+    } val;
     node_t *children;
 };
 typedef struct tree_node tree_node_t;
