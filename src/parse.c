@@ -68,11 +68,9 @@ tree_node_t *parse_expr(node_t **curr) {
         switch (((token_t*)(*curr)->val)->type) {
             case T_SYMBOL:
                 leaf->type = SYMBOL;
-                leaf->val.sym = ((token_t*)(*curr)->val)->val.sym;
                 break;
             case T_NUMBER:
                 leaf->type = NUMBER;
-                leaf->val.num = ((token_t*)(*curr)->val)->val.num;
                 break;
             case T_T:
                 leaf->type = T;
@@ -84,7 +82,7 @@ tree_node_t *parse_expr(node_t **curr) {
                 printf("unexpected token\n");
                 break;
         }
-        //leaf->val = ((token_t*)(*curr)->val)->val;
+        leaf->val = ((token_t*)(*curr)->val)->val;
         leaf->children = NULL;
         iter->val = leaf;
         iter->next = NULL;
