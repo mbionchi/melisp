@@ -14,7 +14,7 @@ node_t *append(node_t **node, void *val) {
     return this;
 }
 
-void freelist(node_t *front, void(*f)(void*)) {
+void free_list(node_t *front, void(*f)(void*)) {
     node_t *prev = NULL;
     node_t *iter = front;
     while (iter) {
@@ -25,17 +25,4 @@ void freelist(node_t *front, void(*f)(void*)) {
     }
 }
 
-/* laggy composition */
-void freelist2(node_t *front, void(*f)(void*,void(*)(void*)), void(*g)(void*)) {
-    node_t *prev = NULL;
-    node_t *iter = front;
-    while (iter) {
-        prev = iter;
-        iter = iter->next;
-        f(prev->val, g);
-        free(prev);
-    }
-}
-
-void freedummy(void *p) {
-}
+void free_dummy(void *p) {}

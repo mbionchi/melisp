@@ -2,21 +2,19 @@
 #define ML_PARSE_H
 
 #include "list.h"
+#include "tokenize.h"
 
 enum ml_val_type {PROGRAM, SEXPR, QEXPR, LIST, SYMBOL, NUMBER, T, F};
 typedef enum ml_val_type ml_val_type_t;
 
 struct tree_node {
     ml_val_type_t type;
-    union {
-        long int num;
-        char *sym;
-    } val;
+    ml_val_t val;
     node_t *children;
 };
 typedef struct tree_node tree_node_t;
 
 tree_node_t *parse(node_t*);
-void freetree(void*, void(*)(void*));
+void free_tree(tree_node_t*);
 
 #endif

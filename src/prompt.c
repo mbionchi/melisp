@@ -95,7 +95,7 @@ void print_ast(tree_node_t *tree) {
     }
 }*/
 
-void print_ast_types(tree_node_t *tree, int indent) {
+void print_ast_full(tree_node_t *tree, int indent) {
     if (!tree) {
         return;
     } else {
@@ -130,7 +130,7 @@ void print_ast_types(tree_node_t *tree, int indent) {
         }
         node_t *iter = tree->children;
         while (iter) {
-            print_ast_types((tree_node_t*)iter->val, indent+2);
+            print_ast_full((tree_node_t*)iter->val, indent+2);
             iter = iter->next;
         }
     }
@@ -146,13 +146,11 @@ int main(int argc, char **argv) {
         node_t *tokens = tokenize(buf);
         print_tokens(tokens);
         tree_node_t *ast = parse(tokens);
-        print_ast_types(ast, 0);
+        free_list(tokens, free);
 //        eval_ast(&ast, NULL);
-//        print_ast_types(ast, 0);
+        print_ast_full(ast, 0);
 //        print_ast(ast);
-//        freetree(ast, freedummy); /* deletion of vals is handled by freelist call,
-//                                     since in the ast vals are a shallow copies */
-//        freelist(tokens, free_token);
+        free_tree(ast);
         free(buf);
         buf = NULL;
         printf("melisp > ");

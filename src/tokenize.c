@@ -4,7 +4,6 @@
 #include <string.h>
 
 #include "tokenize.h"
-#include "parse.h"
 #include "list.h"
 
 #define BUFSIZE 255
@@ -102,9 +101,3 @@ node_t *tokenize(char *s_iter) {
     free(iter);
     return first;
 }
-
-/*
-void free_token(void *t) {
-    free(((token_t*)t)->val);
-    free(t);
-}*/

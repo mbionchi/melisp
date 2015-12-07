@@ -28,23 +28,24 @@ tree_node_t *parse_program(node_t *curr) {
     return program;
 }
 
-/*
-void freetree(void *tree, void(*f)(void*)) {
+void free_tree(tree_node_t *tree) {
     if (!tree) {
         return;
     } else {
-        node_t *iter = ((tree_node_t*)tree)->children;
+        node_t *iter = tree->children;
         node_t *prev;
         while (iter) {
             prev = iter;
             iter = iter->next;
-            freetree(prev->val, f);
+            free_tree((tree_node_t*)prev->val);
             free(prev);
         }
-        f(((tree_node_t*)tree)->val);
+        if (tree->type == SYMBOL) {
+            free(tree->val.sym);
+        }
         free(tree);
     }
-}*/
+}
 
 tree_node_t *parse_expr(node_t **curr) {
     tree_node_t *expr = malloc(sizeof(tree_node_t));
