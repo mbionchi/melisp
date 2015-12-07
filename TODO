@@ -3,3 +3,6 @@
   - in parser
 
 * CHECK FOR MEMORY LEAKS
+
+* LEX
+  - bring in json number notation or something similar
