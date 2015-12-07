@@ -103,7 +103,11 @@ tree_node_t *parse_list(node_t **curr) {
         prev = append(&iter, parse_expr(curr));
     }
     *curr = (*curr)->next;
-    prev->next = NULL;
     free(iter);
+    if (prev) {
+        prev->next = NULL;
+    } else {
+        list->children = NULL;
+    }
     return list;
 }
