@@ -49,52 +49,6 @@ void print_tokens(node_t *iter) {
     }
 }
 
-/*
-void print_ast(tree_node_t *tree) {
-    if (tree) {
-        node_t *iter;
-        switch (tree->type) {
-            case PROGRAM:
-                iter = tree->children;
-                while (iter) {
-                    print_ast((tree_node_t*)iter->val);
-                    printf("\n");
-                    iter = iter->next;
-                }
-                break;
-            case SYMBOL:
-                printf("%s", (char*)tree->val);
-                break;
-            case NUMBER:
-                printf("%d", *(int*)tree->val);
-                break;
-            case LIST:
-                printf("(");
-                iter = tree->children;
-                if (iter) {
-                    print_ast((tree_node_t*)iter->val);
-                    iter = iter->next;
-                }
-                while (iter) {
-                    printf(" ");
-                    print_ast((tree_node_t*)iter->val);
-                    iter = iter->next;
-                }
-                printf(")");
-                break;
-            case T:
-                printf("#t");
-                break;
-            case F:
-                printf("#f");
-                break;
-            default:
-                printf("WTF???");
-                break;
-        }
-    }
-}*/
-
 void print_ast_full(tree_node_t *tree, int indent) {
     if (!tree) {
         return;
@@ -147,9 +101,13 @@ int main(int argc, char **argv) {
         print_tokens(tokens);
         tree_node_t *ast = parse(tokens);
         free_list(tokens, free);
-//        eval_ast(&ast, NULL);
-        print_ast_full(ast, 0);
-//        print_ast(ast);
+        node_t *iter = ast->children;
+        env_t *env = init_env();
+        while(iter) {
+            tree_node_t *this = eval_ast((tree_node_t*)iter->val, env);
+            iter = iter->next;
+            print_ast_full(this, 0);
+        }
         free_tree(ast);
         free(buf);
         buf = NULL;
