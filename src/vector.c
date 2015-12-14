@@ -11,7 +11,10 @@ vector_t *create_vector(size_t n) {
 }
 
 void append(vector_t *v, void *elm) {
-    if (v->length==v->capacity) {
+    if (v->capacity==0) {
+        v->data=malloc(sizeof(void*));
+        v->capacity=1;
+    } else if (v->length==v->capacity) {
         v->data = realloc(v->data, sizeof(void*)*v->capacity*2);
         v->capacity *= 2;
     }
