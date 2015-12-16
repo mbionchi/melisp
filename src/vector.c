@@ -10,7 +10,7 @@ vector_t *create_vector(size_t n) {
     return v;
 }
 
-void append(vector_t *v, void *elm) {
+void push_back(vector_t *v, void *elm) {
     if (v->capacity==0) {
         v->data=malloc(sizeof(void*));
         v->capacity=1;

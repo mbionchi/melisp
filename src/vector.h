@@ -12,7 +12,7 @@ struct vector {
 typedef struct vector vector_t;
 
 vector_t *create_vector(size_t);
-void append(vector_t*, void*);
+void push_back(vector_t*, void*);
 void free_vector(vector_t*v, void(*)(void*));
 
 #endif
