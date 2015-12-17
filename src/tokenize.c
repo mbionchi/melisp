@@ -42,14 +42,12 @@ node_t *tokenize(char *s_iter) {
     char *str = malloc(sizeof(char)*BUFSIZE);
     *str = '\0';
     int i=0;
-    int quote=0;
     while (*s_iter) {
         if (*s_iter == '(') {
             if (!i) {
                 token_t *t = malloc(sizeof(token_t));
                 t->type = T_LPAREN;
                 prev = append(&iter, t);
-                quote=0;
             } else {
                 printf("expected whitespace between token and LPAREN\n");
                 exit(1);
@@ -64,23 +62,12 @@ node_t *tokenize(char *s_iter) {
             token_t *t = malloc(sizeof(token_t));
             t->type = T_RPAREN;
             prev = append(&iter, t);
-            quote=0;
-        } else if (isspace(*s_iter) && !quote) {
+        } else if (isspace(*s_iter)) {
             if (i) {
                 str[i] = '\0';
                 prev = append(&iter, parse_token(str));
                 str = malloc(sizeof(char)*BUFSIZE);
                 i = 0;
-            }
-        } else if (*s_iter == '\'') {
-            if (!i) {
-                token_t *t = malloc(sizeof(token_t));
-                t->type = T_QUOTE;
-                prev = append(&iter, t);
-                quote=1;
-            } else {
-                printf("expected whitespace between token and QUOTE\n");
-                exit(1);
             }
         } else if (isgraph(*s_iter) &&
                 *s_iter != ')' && *s_iter != '(' && *s_iter != '\'') {
@@ -90,7 +77,6 @@ node_t *tokenize(char *s_iter) {
                 printf("token too long\n");
                 exit(1);
             }
-            quote=0;
         } else {
             printf("unexpected character: %c\n", *s_iter);
             exit(1);

@@ -38,9 +38,6 @@ void print_tokens(node_t *iter) {
             case T_F:
                 printf("LEXER: FALSE\n");
                 break;
-            case T_QUOTE:
-                printf("LEXER: QUOTE\n");
-                break;
             default:
                 printf("WTF???\n");
                 break;
@@ -56,12 +53,6 @@ void print_ast_full(tree_node_t *tree, int indent) {
         switch (tree->type) {
             case PROGRAM:
                 fprintf(stderr,"%sPROGRAM\n", getindent(indent));
-                break;
-            case QEXPR:
-                fprintf(stderr,"%sQEXPR\n", getindent(indent));
-                break;
-            case SEXPR:
-                fprintf(stderr,"%sSEXPR\n", getindent(indent));
                 break;
             case LIST:
                 fprintf(stderr,"%sLIST\n", getindent(indent));
@@ -82,10 +73,13 @@ void print_ast_full(tree_node_t *tree, int indent) {
                 fprintf(stderr,"%sWTF?\n", getindent(indent));
                 break;
         }
-        node_t *iter = tree->children;
-        while (iter) {
-            print_ast_full((tree_node_t*)iter->val, indent+2);
-            iter = iter->next;
+        if (tree->children) {
+            tree_node_t **iter;
+            for (iter=(tree_node_t**)tree->children->data;
+                 iter<(tree_node_t**)tree->children->data+tree->children->length;
+                 iter++) {
+                print_ast_full(*iter, indent+2);
+            }
         }
     }
 }
@@ -101,13 +95,7 @@ int main(int argc, char **argv) {
         print_tokens(tokens);
         tree_node_t *ast = parse(tokens);
         free_list(tokens, free);
-        node_t *iter = ast->children;
-        env_t *env = init_env();
-        while(iter) {
-            tree_node_t *this = eval_ast((tree_node_t*)iter->val, env);
-            iter = iter->next;
-            print_ast_full(this, 0);
-        }
+        print_ast_full(ast, 0);
         free_tree(ast);
         free(buf);
         buf = NULL;

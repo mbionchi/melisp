@@ -5,7 +5,7 @@
 #include "vector.h"
 #include "tokenize.h"
 
-enum ml_val_type {PROGRAM, SEXPR, QEXPR, LIST, SYMBOL, NUMBER, T, F};
+enum ml_val_type {PROGRAM, LIST, SYMBOL, NUMBER, T, F};
 typedef enum ml_val_type ml_val_type_t;
 
 struct tree_node {
@@ -16,6 +16,6 @@ struct tree_node {
 typedef struct tree_node tree_node_t;
 
 tree_node_t *parse(node_t*);
-void free_tree(tree_node_t*);
+void free_tree(void*);
 
 #endif

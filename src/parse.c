@@ -18,65 +18,51 @@ tree_node_t *parse(node_t *tokens) {
 tree_node_t *parse_program(node_t *curr) {
     tree_node_t *program = malloc(sizeof(tree_node_t));
     program->type = PROGRAM;
-    program->children = create_vector(8);
+    program->children = create_vector(4);
     push_back(program->children, parse_expr(&curr));
     return program;
 }
 
-void free_tree(tree_node_t *tree) {
-    /*
+void free_tree(void *tree) {
     if (!tree) {
         return;
     } else {
-        node_t *iter = tree->children;
-        node_t *prev;
-        while (iter) {
-            prev = iter;
-            iter = iter->next;
-            free_tree((tree_node_t*)prev->val);
-            free(prev);
+        if (((tree_node_t*)tree)->children) {
+            free_vector(((tree_node_t*)tree)->children, free_tree);
         }
-        if (tree->type == SYMBOL) {
-            free(tree->val.sym);
+        if (((tree_node_t*)tree)->type == SYMBOL) {
+            free(((tree_node_t*)tree)->val.sym);
         }
         free(tree);
     }
-    */
 }
 
 tree_node_t *parse_expr(node_t **curr) {
-    tree_node_t *expr = malloc(sizeof(tree_node_t));
-    if (((token_t*)(*curr)->val)->type == T_QUOTE) {
-        expr->type = QEXPR;
-        *curr = (*curr)->next;
-    } else {
-        expr->type = SEXPR;
-    }
-    expr->children = create_vector(1);
+    tree_node_t *expr;
     if (((token_t*)(*curr)->val)->type == T_LPAREN) {
-        push_back(expr->children, parse_list(curr));
+        *curr = (*curr)->next;
+        expr = parse_list(curr);
     } else {
-        tree_node_t *leaf = malloc(sizeof(tree_node_t));
+        expr = malloc(sizeof(tree_node_t));
         switch (((token_t*)(*curr)->val)->type) {
             case T_SYMBOL:
-                leaf->type = SYMBOL;
+                expr->type = SYMBOL;
                 break;
             case T_NUMBER:
-                leaf->type = NUMBER;
+                expr->type = NUMBER;
                 break;
             case T_T:
-                leaf->type = T;
+                expr->type = T;
                 break;
             case T_F:
-                leaf->type = F;
+                expr->type = F;
                 break;
             default:
                 printf("unexpected token\n");
                 break;
         }
-        leaf->val = ((token_t*)(*curr)->val)->val;
-        leaf->children = create_vector(0);
-        push_back(expr->children, leaf);
+        expr->val = ((token_t*)(*curr)->val)->val;
+        expr->children = NULL;
         *curr = (*curr)->next;
     }
     return expr;

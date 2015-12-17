@@ -3,7 +3,7 @@
 
 #include "list.h"
 
-enum token_type {T_LPAREN, T_RPAREN, T_SYMBOL, T_NUMBER, T_T, T_F, T_QUOTE};
+enum token_type {T_LPAREN, T_RPAREN, T_SYMBOL, T_NUMBER, T_T, T_F};
 typedef enum token_type token_type_t;
 
 union ml_val {

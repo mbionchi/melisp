@@ -25,7 +25,7 @@ void push_back(vector_t *v, void *elm) {
 
 void free_vector(vector_t *v, void(*f)(void*)) {
     void **iter;
-    for (iter=v->data; iter<iter+v->length; iter++) {
+    for (iter=v->data; iter<v->data+v->length; iter++) {
         f(*iter);
     }
     free(v->data);
