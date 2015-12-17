@@ -41,12 +41,13 @@ node_t *tokenize(char *s_iter) {
     iter = first;
     char *str = malloc(sizeof(char)*BUFSIZE);
     *str = '\0';
-    int i=0;
+    int i=0, parenct=0;
     while (*s_iter) {
         if (*s_iter == '(') {
             if (!i) {
                 token_t *t = malloc(sizeof(token_t));
                 t->type = T_LPAREN;
+                parenct++;
                 prev = append(&iter, t);
             } else {
                 printf("expected whitespace between token and LPAREN\n");
@@ -61,6 +62,7 @@ node_t *tokenize(char *s_iter) {
             }
             token_t *t = malloc(sizeof(token_t));
             t->type = T_RPAREN;
+            parenct--;
             prev = append(&iter, t);
         } else if (isspace(*s_iter)) {
             if (i) {
@@ -85,5 +87,9 @@ node_t *tokenize(char *s_iter) {
     }
     prev->next = NULL;
     free(iter);
+    if (parenct != 0) {
+        printf("mismatched parentheses in expression\n");
+        exit(1);
+    }
     return first;
 }
