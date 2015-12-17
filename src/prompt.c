@@ -5,7 +5,6 @@
 #include "list.h"
 #include "parse.h"
 #include "eval.h"
-#include "hashmap.h"
 
 char *getindent(int n) {
     char *str = malloc(sizeof(char)*n+1);
@@ -91,8 +90,6 @@ int main(int argc, char **argv) {
     char *buf = NULL;
     printf("melisp > ");
     nr = getline(&buf, &n, stdin);
-    printf("hashed: %u\n", hash(buf));
-    /*
     while (nr > 0) {
         node_t *tokens = tokenize(buf);
         print_tokens(tokens);
@@ -104,7 +101,7 @@ int main(int argc, char **argv) {
         buf = NULL;
         printf("melisp > ");
         nr = getline(&buf, &n, stdin);
-    }*/
+    }
     printf("\n");
     return 0;
 }
