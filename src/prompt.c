@@ -84,6 +84,53 @@ void print_ast_full(tree_node_t *tree, int indent) {
     }
 }
 
+void repr(tree_node_t *tree) {
+    if (!tree) {
+        return;
+    } else {
+        tree_node_t **iter;
+        switch (tree->type) {
+            case PROGRAM:
+                if (tree->children) {
+                    for (iter = (tree_node_t**)tree->children->data;
+                         iter < (tree_node_t**)tree->children->data+tree->children->length;
+                         iter++) {
+                        repr(*iter);
+                        printf("\n");
+                    }
+                }
+                break;
+            case LIST:
+                printf("(");
+                if (tree->children) {
+                    for (iter = (tree_node_t**)tree->children->data;
+                         iter < (tree_node_t**)tree->children->data+tree->children->length-1;
+                         iter++) {
+                        repr(*iter);
+                        printf(" ");
+                    }
+                }
+                if (iter) {
+                    repr(*iter);
+                }
+                printf(")");
+                break;
+            case SYMBOL:
+                printf("%s", tree->val.sym);
+                break;
+            case NUMBER:
+                printf("%ld", tree->val.num);
+                break;
+            case T:
+                printf("#t");
+                break;
+            case F:
+                printf("#f");
+                break;
+        }
+    }
+}
+
 int main(int argc, char **argv) {
     ssize_t nr;
     size_t n = 0;
@@ -96,6 +143,7 @@ int main(int argc, char **argv) {
         tree_node_t *ast = parse(tokens);
         free_list(tokens, free);
         print_ast_full(ast, 0);
+        repr(ast);
         free_tree(ast);
         free(buf);
         buf = NULL;
